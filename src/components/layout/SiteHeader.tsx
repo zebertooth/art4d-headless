@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/layout/Logo";
 import { SearchForm } from "@/components/layout/SearchForm";
+import { CartLink } from "@/components/shop/CartLink";
 import { hrefWithLang, mainNav, t } from "@/lib/navigation";
 import type { WPLanguage } from "@/lib/types";
 
@@ -22,6 +23,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
             <div className="hidden sm:block">
               <SearchForm lang={lang} />
             </div>
+            <CartLink lang={lang} />
             <Link href={hrefWithLang("/contact/newsletter", lang)} className="hover:text-black">
               {lang === "th" ? "จดหมายข่าว" : "Newsletter"}
             </Link>
