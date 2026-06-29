@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { CART_TOKEN_COOKIE } from "@/lib/store-api";
 
@@ -18,17 +19,19 @@ export function jsonWithCartToken<T>(
       path: "/",
       maxAge: COOKIE_MAX_AGE,
     });
+    // Mirror for client sessionStorage fallback (non-httpOnly)
+    res.headers.set("Cart-Token", cartToken);
   }
 
   return res;
 }
 
-export function getCartTokenFromRequest(
+export async function getCartTokenFromRequest(
   request: Request,
-): string | undefined {
-  const cookieHeader = request.headers.get("cookie") ?? "";
-  const match = cookieHeader.match(
-    new RegExp(`${CART_TOKEN_COOKIE}=([^;]+)`),
-  );
-  return match?.[1] ? decodeURIComponent(match[1]) : undefined;
+): Promise<string | undefined> {
+  const headerToken = request.headers.get("Cart-Token");
+  if (headerToken) return headerToken;
+
+  const cookieStore = await cookies();
+  return cookieStore.get(CART_TOKEN_COOKIE)?.value;
 }

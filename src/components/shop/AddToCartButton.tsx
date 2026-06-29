@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { hrefWithLang } from "@/lib/navigation";
+import { storeFetch } from "@/lib/store-client";
+import type { WCCart } from "@/lib/store-types";
 import type { WPLanguage } from "@/lib/types";
 
 export function AddToCartButton({
@@ -20,12 +22,11 @@ export function AddToCartButton({
   async function handleClick() {
     setLoading(true);
     try {
-      const res = await fetch("/api/store/cart/items", {
+      await storeFetch<WCCart>("/api/store/cart/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "add", productId, quantity: 1 }),
       });
-      if (!res.ok) throw new Error("Failed");
       setDone(true);
       window.dispatchEvent(new Event("cart-updated"));
     } catch {

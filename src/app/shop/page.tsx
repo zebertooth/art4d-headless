@@ -3,6 +3,7 @@ import { Pagination } from "@/components/layout/Pagination";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { ShopBanner } from "@/components/shop/ShopBanner";
 import { hrefWithLang } from "@/lib/navigation";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getProducts } from "@/lib/store-api";
@@ -59,6 +60,7 @@ export default async function ShopPage({
 
   return (
     <SiteLayout lang={lang}>
+      <ShopBanner lang={lang} />
       <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6">
         <SectionHeading
           title={lang === "th" ? "ร้านค้า" : "Shop"}

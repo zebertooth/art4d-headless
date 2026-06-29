@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { hrefWithLang } from "@/lib/navigation";
+import { storeFetch } from "@/lib/store-client";
+import type { WCCart } from "@/lib/store-types";
 import type { WPLanguage } from "@/lib/types";
 
 export function CartLink({ lang }: { lang: WPLanguage }) {
@@ -10,9 +12,7 @@ export function CartLink({ lang }: { lang: WPLanguage }) {
 
   async function loadCart() {
     try {
-      const res = await fetch("/api/store/cart");
-      if (!res.ok) return;
-      const cart = await res.json();
+      const cart = await storeFetch<WCCart>("/api/store/cart");
       setCount(cart.items_count ?? 0);
     } catch {
       // ignore

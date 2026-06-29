@@ -6,7 +6,7 @@ import {
 
 export async function GET(request: Request) {
   try {
-    const token = getCartTokenFromRequest(request);
+    const token = await getCartTokenFromRequest(request);
     const { data, cartToken } = await getCart(token);
     return jsonWithCartToken(data, cartToken);
   } catch (e) {

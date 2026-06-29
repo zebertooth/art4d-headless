@@ -10,7 +10,7 @@ import {
 
 export async function POST(request: Request) {
   try {
-    const token = getCartTokenFromRequest(request);
+    const token = await getCartTokenFromRequest(request);
     const body = (await request.json()) as {
       action: "add" | "update" | "remove";
       productId?: number;

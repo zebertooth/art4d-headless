@@ -12,7 +12,7 @@ import {
 
 export async function GET(request: Request) {
   try {
-    const token = getCartTokenFromRequest(request);
+    const token = await getCartTokenFromRequest(request);
     const { data, cartToken } = await getCheckout(token);
     return jsonWithCartToken(data, cartToken);
   } catch (e) {
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const token = getCartTokenFromRequest(request);
+    const token = await getCartTokenFromRequest(request);
     const body = await request.json();
 
     if (body.shipping_rate) {
@@ -60,7 +60,7 @@ export async function PUT(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const token = getCartTokenFromRequest(request);
+    const token = await getCartTokenFromRequest(request);
     const body = (await request.json()) as {
       billing_address: Record<string, string>;
       shipping_address: Record<string, string>;

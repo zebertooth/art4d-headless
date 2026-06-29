@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { hrefWithLang } from "@/lib/navigation";
+import { storeFetch } from "@/lib/store-client";
 import { formatStorePrice, type WCCart } from "@/lib/store-types";
 import type { WPLanguage } from "@/lib/types";
 
@@ -19,12 +20,16 @@ function productSlugFromPermalink(permalink: string): string {
 export function CartView({ lang }: { lang: WPLanguage }) {
   const [cart, setCart] = useState<WCCart | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch("/api/store/cart");
-      if (res.ok) setCart(await res.json());
+      const data = await storeFetch<WCCart>("/api/store/cart");
+      setCart(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load cart");
     } finally {
       setLoading(false);
     }
@@ -35,31 +40,46 @@ export function CartView({ lang }: { lang: WPLanguage }) {
   }, [load]);
 
   async function updateQty(key: string, quantity: number) {
-    const res = await fetch("/api/store/cart/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "update", key, quantity }),
-    });
-    if (res.ok) {
-      setCart(await res.json());
+    try {
+      const data = await storeFetch<WCCart>("/api/store/cart/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", key, quantity }),
+      });
+      setCart(data);
       window.dispatchEvent(new Event("cart-updated"));
+    } catch {
+      alert(lang === "th" ? "อัปเดตไม่สำเร็จ" : "Update failed");
     }
   }
 
   async function remove(key: string) {
-    const res = await fetch("/api/store/cart/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "remove", key }),
-    });
-    if (res.ok) {
-      setCart(await res.json());
+    try {
+      const data = await storeFetch<WCCart>("/api/store/cart/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "remove", key }),
+      });
+      setCart(data);
       window.dispatchEvent(new Event("cart-updated"));
+    } catch {
+      alert(lang === "th" ? "ลบไม่สำเร็จ" : "Remove failed");
     }
   }
 
   if (loading) {
     return <p className="text-neutral-500">{lang === "th" ? "กำลังโหลด…" : "Loading…"}</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-red-700">{error}</p>
+        <button type="button" onClick={load} className="mt-4 text-sm underline">
+          {lang === "th" ? "ลองอีกครั้ง" : "Retry"}
+        </button>
+      </div>
+    );
   }
 
   if (!cart?.items.length) {

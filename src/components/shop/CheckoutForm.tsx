@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { hrefWithLang } from "@/lib/navigation";
+import { storeFetch } from "@/lib/store-client";
 import { PAYMENT_METHODS } from "@/lib/store-types";
 import type { WCCart, WCCheckout } from "@/lib/store-types";
 import type { WPLanguage } from "@/lib/types";
@@ -35,8 +36,8 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/store/cart");
-      if (res.ok) setCart(await res.json());
+      const data = await storeFetch<WCCart>("/api/store/cart");
+      setCart(data);
     } finally {
       setLoading(false);
     }
@@ -64,7 +65,7 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
       : shipping;
 
     try {
-      await fetch("/api/store/checkout", {
+      await storeFetch("/api/store/checkout", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -76,7 +77,7 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
       if (cart?.needs_shipping && cart.shipping_rates[0]?.shipping_rates[0]) {
         const pkg = cart.shipping_rates[0];
         const rate = pkg.shipping_rates.find((r) => r.selected) ?? pkg.shipping_rates[0];
-        await fetch("/api/store/checkout", {
+        await storeFetch("/api/store/checkout", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -88,7 +89,7 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
         });
       }
 
-      const res = await fetch("/api/store/checkout", {
+      const checkout = await storeFetch<WCCheckout>("/api/store/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -98,12 +99,6 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
           customer_note: note,
         }),
       });
-
-      const checkout = (await res.json()) as WCCheckout & { error?: string };
-
-      if (!res.ok) {
-        throw new Error(checkout.error ?? "Checkout failed");
-      }
 
       const redirect = checkout.payment_result?.redirect_url;
       if (redirect) {
