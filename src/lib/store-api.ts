@@ -180,8 +180,8 @@ function cartFromItems(
 }
 
 /**
- * Read cart. art4d WooCommerce resets GET /cart to an empty session when a
- * Cart-Token is sent — assemble the cart from /cart/items instead.
+ * Read cart. art4d WooCommerce GET /cart and /cart/items can disagree with the
+ * session used by mutations — update-customer returns the authoritative cart.
  */
 export async function getCart(
   cartToken?: string | null,
@@ -193,9 +193,20 @@ export async function getCart(
   const itemsResult = await storeFetch<WCCartItem[]>("/cart/items", {
     cartToken,
   });
-  const items = Array.isArray(itemsResult.data) ? itemsResult.data : [];
+  const listedItems = Array.isArray(itemsResult.data) ? itemsResult.data : [];
 
-  return cartFromItems(items, itemsResult.cartToken ?? cartToken);
+  if (!listedItems.length) {
+    return {
+      data: emptyCartShell(),
+      cartToken: itemsResult.cartToken ?? cartToken,
+    };
+  }
+
+  try {
+    return await updateCartCustomer({}, cartToken);
+  } catch {
+    return cartFromItems(listedItems, itemsResult.cartToken ?? cartToken);
+  }
 }
 
 export async function addToCart(

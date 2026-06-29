@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { hrefWithLang } from "@/lib/navigation";
-import { storeFetch } from "@/lib/store-client";
+import { formatStoreError, storeFetch } from "@/lib/store-client";
 import { formatStorePrice, type WCCart } from "@/lib/store-types";
 import type { WPLanguage } from "@/lib/types";
 
@@ -48,8 +48,13 @@ export function CartView({ lang }: { lang: WPLanguage }) {
       });
       setCart(data);
       window.dispatchEvent(new Event("cart-updated"));
-    } catch {
-      alert(lang === "th" ? "อัปเดตไม่สำเร็จ" : "Update failed");
+    } catch (e) {
+      alert(
+        formatStoreError(
+          e instanceof Error ? e.message : lang === "th" ? "อัปเดตไม่สำเร็จ" : "Update failed",
+        ),
+      );
+      await load();
     }
   }
 
@@ -62,8 +67,13 @@ export function CartView({ lang }: { lang: WPLanguage }) {
       });
       setCart(data);
       window.dispatchEvent(new Event("cart-updated"));
-    } catch {
-      alert(lang === "th" ? "ลบไม่สำเร็จ" : "Remove failed");
+    } catch (e) {
+      alert(
+        formatStoreError(
+          e instanceof Error ? e.message : lang === "th" ? "ลบไม่สำเร็จ" : "Remove failed",
+        ),
+      );
+      await load();
     }
   }
 
