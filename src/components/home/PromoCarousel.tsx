@@ -127,7 +127,7 @@ export function PromoCarousel({
 
             {showCaption && s.title && variant === "hero" && (
               <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-10 sm:px-10 sm:pb-14">
-                <h2 className="max-w-3xl font-display text-2xl leading-tight text-white sm:text-3xl lg:text-4xl">
+                <h2 className="max-w-3xl break-words font-display text-lg leading-tight text-white line-clamp-3 sm:text-2xl lg:text-3xl">
                   {s.title}
                 </h2>
                 {s.subtitle && (

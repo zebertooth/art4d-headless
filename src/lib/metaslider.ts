@@ -18,6 +18,8 @@ export type MetaSlideshow = {
   slides: MetaSlide[];
 };
 
+const API_BASE = process.env.WORDPRESS_API_URL ?? "https://art4d.com/wp-json";
+
 const SOURCE_URL =
   process.env.METASLIDER_SOURCE_URL ?? "https://art4d.com/";
 
@@ -123,9 +125,44 @@ function decodeHtml(text: string): string {
     .replace(/&#039;/g, "'");
 }
 
+type RestSlideshow = {
+  id: number;
+  label: string;
+  width: number;
+  height: number;
+  slides: MetaSlide[];
+};
+
+async function fetchSlideshowFromRest(
+  slideshowId: number,
+): Promise<MetaSlideshow | null> {
+  try {
+    const res = await fetch(`${API_BASE}/art4d/v1/slideshow/${slideshowId}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as RestSlideshow;
+    if (!data?.slides?.length) return null;
+
+    return {
+      id: data.id,
+      label: data.label,
+      width: data.width,
+      height: data.height,
+      slides: data.slides,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getMetaSlideshow(
   slideshowId: number,
 ): Promise<MetaSlideshow | null> {
+  const fromRest = await fetchSlideshowFromRest(slideshowId);
+  if (fromRest?.slides.length) return fromRest;
+
   try {
     const html = await fetchSourceHtml();
     return parseSlideshowFromHtml(html, slideshowId);
@@ -139,18 +176,21 @@ export async function getHomepageSlideshows(): Promise<{
   hero: MetaSlideshow | null;
   banners: MetaSlideshow[];
 }> {
-  try {
-    const html = await fetchSourceHtml();
-    const bannerTop = parseSlideshowFromHtml(html, HOME_SLIDESHOW.bannerTop);
-    const hero = parseSlideshowFromHtml(html, HOME_SLIDESHOW.hero);
-    const banners = HOME_SLIDESHOW.banners
-      .map((id) => parseSlideshowFromHtml(html, id))
-      .filter((s): s is MetaSlideshow => s !== null && s.slides.length > 0);
+  const ids = [
+    HOME_SLIDESHOW.bannerTop,
+    HOME_SLIDESHOW.hero,
+    ...HOME_SLIDESHOW.banners,
+  ];
 
-    return { bannerTop, hero, banners };
-  } catch {
-    return { bannerTop: null, hero: null, banners: [] };
-  }
+  const results = await Promise.all(ids.map((id) => getMetaSlideshow(id)));
+
+  const bannerTop = results[0] ?? null;
+  const hero = results[1] ?? null;
+  const banners = results
+    .slice(2)
+    .filter((s): s is MetaSlideshow => s !== null && s.slides.length > 0);
+
+  return { bannerTop, hero, banners };
 }
 
 export function metaSlidesToCarousel(

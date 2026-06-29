@@ -18,13 +18,16 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
       {/* Top bar */}
       <div className="border-b border-neutral-100">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2 text-[11px] uppercase tracking-widest text-neutral-500 sm:px-6">
-          <span>{lang === "th" ? "นิตยสารสถาปัตยกรรมและการออกแบบ" : "Architecture & Design Magazine"}</span>
-          <div className="flex items-center gap-4">
+          <span className="hidden sm:inline">
+            {lang === "th" ? "นิตยสารสถาปัตยกรรมและการออกแบบ" : "Architecture & Design Magazine"}
+          </span>
+          <span className="sm:hidden">{lang === "th" ? "art4d" : "art4d"}</span>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
             <div className="hidden sm:block">
               <SearchForm lang={lang} />
             </div>
             <CartLink lang={lang} />
-            <Link href={hrefWithLang("/contact/newsletter", lang)} className="hover:text-black">
+            <Link href={hrefWithLang("/contact/newsletter", lang)} className="hidden hover:text-black md:inline">
               {lang === "th" ? "จดหมายข่าว" : "Newsletter"}
             </Link>
             <Link

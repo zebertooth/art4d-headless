@@ -51,7 +51,7 @@ export async function renderArticlePage(slug: string, lang: WPLanguage) {
             </p>
           )}
 
-          <h1 className="mt-4 font-display text-4xl leading-[1.1] text-black sm:text-5xl lg:text-6xl">
+          <h1 className="mt-4 font-display text-3xl leading-[1.15] text-black sm:text-4xl lg:text-5xl">
             {title}
           </h1>
 

@@ -51,7 +51,11 @@ Revalidate custom paths:
 
 ## 3. WordPress setup
 
-Use a plugin such as **WP Webhooks** or add to your theme `functions.php`:
+**Recommended:** install the mu-plugin — it handles publish webhooks automatically.
+
+See **[wp-mu-plugin.md](./wp-mu-plugin.md)** (copy `wordpress-mu-plugins/art4d-headless.php` to `wp-content/mu-plugins/`).
+
+Or add manually to `functions.php`:
 
 ```php
 add_action('save_post', function ($post_id) {

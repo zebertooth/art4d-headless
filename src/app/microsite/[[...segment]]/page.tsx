@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArticleCard } from "@/components/articles/ArticleCard";
 import { SectionHeading } from "@/components/layout/SectionHeading";
@@ -45,13 +46,7 @@ export default async function MicrositePage({
   }
 
   const site = microsites[key];
-  if (!site) {
-    return (
-      <SiteLayout lang={lang}>
-        <p className="p-16 text-center">Not found</p>
-      </SiteLayout>
-    );
-  }
+  if (!site) notFound();
 
   const cat = await getCategoryBySlug(site.categorySlug);
   const posts = cat ? await getPostsByCategory(cat.id, lang, 1, 12) : [];

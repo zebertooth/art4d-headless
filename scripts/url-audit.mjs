@@ -1,8 +1,15 @@
 /**
  * Compare WordPress post URLs vs headless demo responses.
- * Run: node scripts/url-audit.mjs [--limit=100] [--site=https://art4d-headless.vercel.app]
+ * Run: npm run audit
+ *      npm run audit -- --limit=50 --site=http://localhost:3000
  */
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
 const API_BASE = process.env.WORDPRESS_API_URL ?? "https://art4d.com/wp-json";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
     const [k, v] = a.replace(/^--/, "").split("=");
@@ -11,6 +18,7 @@ const args = Object.fromEntries(
 );
 const SITE = args.site ?? "https://art4d-headless.vercel.app";
 const LIMIT = Number(args.limit ?? 100);
+const SKIP_ROUTES = args["skip-routes"] === true;
 
 function parseArticlePathFromLink(link) {
   try {
@@ -34,6 +42,20 @@ function getPostHref(post) {
   if (parsed) return parsed;
   const lang = post.lang ?? "en";
   return lang === "en" ? `/en/article/${post.slug}` : `/article/${post.slug}`;
+}
+
+function loadStaticRoutes() {
+  const navPath = join(__dirname, "../src/lib/navigation.ts");
+  const source = readFileSync(navPath, "utf8");
+  const hrefs = [...source.matchAll(/href:\s*"([^"]+)"/g)].map((m) => m[1]);
+  const unique = [...new Set(hrefs)];
+
+  const routes = new Set(["/", "/th", "/search", "/shop", "/shop/cart"]);
+  for (const href of unique) {
+    routes.add(href);
+    routes.add(`/th${href}`);
+  }
+  return [...routes];
 }
 
 async function fetchPosts(lang, page, perPage) {
@@ -60,11 +82,7 @@ async function checkUrl(path) {
   }
 }
 
-async function main() {
-  console.log(`URL audit: ${SITE} (limit ${LIMIT} per language)\n`);
-
-  const report = { ok: 0, fail: 0, nonStandard: 0, failures: [] };
-
+async function auditPosts(report) {
   for (const lang of ["en", "th"]) {
     const perPage = Math.min(LIMIT, 100);
     const pages = Math.ceil(LIMIT / perPage);
@@ -86,23 +104,68 @@ async function main() {
           report.ok++;
         } else {
           report.fail++;
-          report.failures.push({ lang, path, status, wp: post.link });
+          report.failures.push({ type: "post", lang, path, status, wp: post.link });
         }
       }
     }
   }
+}
 
-  console.log(`OK: ${report.ok}`);
-  console.log(`Failed: ${report.fail}`);
+async function auditRoutes(report) {
+  const routes = loadStaticRoutes();
+  console.log(`\nStatic routes (${routes.length})…`);
+
+  for (const path of routes) {
+    const status = await checkUrl(path);
+    if (status >= 200 && status < 400) {
+      report.routeOk++;
+    } else {
+      report.routeFail++;
+      report.failures.push({ type: "route", path, status });
+    }
+  }
+}
+
+async function main() {
+  console.log(`URL audit: ${SITE} (limit ${LIMIT} posts per language)`);
+
+  const report = {
+    ok: 0,
+    fail: 0,
+    nonStandard: 0,
+    routeOk: 0,
+    routeFail: 0,
+    failures: [],
+  };
+
+  await auditPosts(report);
+
+  if (!SKIP_ROUTES) {
+    await auditRoutes(report);
+  }
+
+  console.log(`\nPosts OK: ${report.ok}`);
+  console.log(`Posts failed: ${report.fail}`);
   console.log(`Non-standard WP URLs: ${report.nonStandard}`);
+
+  if (!SKIP_ROUTES) {
+    console.log(`Routes OK: ${report.routeOk}`);
+    console.log(`Routes failed: ${report.routeFail}`);
+  }
+
   if (report.failures.length) {
     console.log("\nFailures:");
-    for (const f of report.failures.slice(0, 20)) {
-      console.log(`  [${f.status}] ${f.path} ← ${f.wp}`);
+    for (const f of report.failures.slice(0, 30)) {
+      if (f.type === "post") {
+        console.log(`  [${f.status}] ${f.path} ← ${f.wp}`);
+      } else {
+        console.log(`  [${f.status}] ${f.path}`);
+      }
     }
   }
 
-  process.exit(report.fail > 0 ? 1 : 0);
+  const totalFail = report.fail + report.routeFail;
+  process.exit(totalFail > 0 ? 1 : 0);
 }
 
 main().catch((err) => {

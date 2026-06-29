@@ -96,8 +96,9 @@ Finish the editorial site so it can replace the WordPress theme. **No S3 or shop
 - [x] **Events / competition** — wired to WP (`update` category + search)
 - [x] **Search** — `/search?q=` with WP REST search API
 - [x] **Tag archives** — `/tag/[slug]` with pagination
-- [x] **Publish webhook** — `POST /api/revalidate` (see `docs/wp-revalidate.md`)
-- [ ] **Mobile + performance** — layout pass, Lighthouse on key templates
+- [x] **Publish webhook** — `POST /api/revalidate` + mu-plugin (`docs/wp-mu-plugin.md`)
+- [x] **Meta Slider REST** — mu-plugin `GET /wp-json/art4d/v1/slideshow/{id}` (HTML fallback until installed)
+- [ ] **Mobile + performance** — layout pass, Lighthouse on key templates (`docs/qa-checklist.md`)
 - [x] **robots.txt** — noindex demo until `NEXT_PUBLIC_ALLOW_INDEXING=true`
 - [ ] **Team review** — design and navigation sign-off
 
@@ -249,7 +250,7 @@ Switch `art4d.com` to the headless frontend.
 | 2026-06-29 | Phase 1 started — Next.js scaffold, types, utils, docs |
 | 2026-06-29 | Phase 1 complete — Vercel deploy, SEO, pagination, revalidate API |
 | 2026-06-29 | Phase 2 started — `scripts/wp-inventory.mjs` for media migration prep |
-| 2026-06-29 | **Reprioritized** — Phase 1b website completion first; S3 + shop deferred to last |
+| 2026-06-30 | Meta Slider carousels, typography revert, URL audit (200/200), mu-plugin + QA/cutover docs |
 
 ---
 
