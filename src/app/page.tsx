@@ -1,11 +1,17 @@
-import { AdSlot } from "@/components/ads/AdSlot";
 import { ArticleCard } from "@/components/articles/ArticleCard";
-import { HomeHeroSlider } from "@/components/home/HomeHeroSlider";
+import {
+  HomepageBannerRow,
+} from "@/components/home/MetaSliderBlock";
+import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { BookShopStrip } from "@/components/home/HomeSections";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { WebsiteJsonLd } from "@/components/seo/ArticleJsonLd";
 import { heroOverlays } from "@/lib/home-hero";
+import {
+  getHomepageSlideshows,
+  metaSlidesToCarousel,
+} from "@/lib/metaslider";
 import { homeSections } from "@/lib/navigation";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import type { WPLanguage } from "@/lib/types";
@@ -52,6 +58,8 @@ export default async function Home({
   let photoEssays: Awaited<ReturnType<typeof loadCategoryPosts>> = [];
   let error: string | null = null;
 
+  const slideshowsPromise = getHomepageSlideshows();
+
   try {
     [latest, bites, photoEssays] = await Promise.all([
       getPosts(lang, 1, 16),
@@ -62,20 +70,33 @@ export default async function Home({
     error = e instanceof Error ? e.message : "Failed to load posts";
   }
 
+  const { bannerTop, hero, banners } = await slideshowsPromise;
+
   const heroPosts = latest.slice(0, 8);
-  const heroSlides = heroPosts.flatMap((post, i) => {
+  const postHeroSlides = heroPosts.flatMap((post, i) => {
     const image = getFeaturedImage(post)?.src;
     if (!image) return [];
     return [
       {
-        id: post.id,
+        id: String(post.id),
         href: getPostHref(post),
         image,
         title: decodeHtmlEntities(stripHtml(post.title.rendered)),
-        overlay: heroOverlays[i],
+        badge: heroOverlays[i]?.badge,
+        subtitle: heroOverlays[i]?.subtitle,
       },
     ];
   });
+
+  const metaHeroSlides = hero?.slides.length
+    ? metaSlidesToCarousel(hero).map((s, i) => ({
+        ...s,
+        badge: heroOverlays[i]?.badge,
+        subtitle: heroOverlays[i]?.subtitle,
+      }))
+    : [];
+
+  const heroSlides = metaHeroSlides.length ? metaHeroSlides : postHeroSlides;
   const gridPosts = latest.slice(5, 9);
 
   return (
@@ -87,13 +108,33 @@ export default async function Home({
         </div>
       ) : (
         <>
-          {/* Highlight — full-width hero slider (art4d.com style) */}
-          <HomeHeroSlider slides={heroSlides} />
+          {/* Top banner — Meta Slider BANNER_TOP (art4d.com) */}
+          {bannerTop?.slides.length ? (
+            <PromoCarousel
+              slides={metaSlidesToCarousel(bannerTop)}
+              variant="banner"
+              aspectWidth={bannerTop.width}
+              aspectHeight={bannerTop.height}
+              label={bannerTop.label}
+            />
+          ) : null}
 
-          {/* Ad position 1 */}
-          <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-            <AdSlot id="home-banner-1" size="billboard" />
-          </div>
+          {heroSlides.length > 0 ? (
+            <PromoCarousel
+              slides={heroSlides}
+              variant="hero"
+              aspectWidth={hero?.width ?? 1200}
+              aspectHeight={hero?.height ?? 675}
+              label={hero?.label ?? "Featured"}
+              showCaption
+            />
+          ) : null}
+
+          <HomepageBannerRow
+            slideshow={banners[0]}
+            fallbackAdId="home-banner-1"
+            adSize="billboard"
+          />
 
           {/* Latest — 4 column grid */}
           <section className="mx-auto max-w-[1400px] px-4 pb-12 sm:px-6">
@@ -109,10 +150,12 @@ export default async function Home({
             </div>
           </section>
 
-          {/* Ad position 2 */}
-          <div className="mx-auto max-w-[1400px] px-4 pb-8 sm:px-6">
-            <AdSlot id="home-banner-2" size="leaderboard" />
-          </div>
+          <HomepageBannerRow
+            slideshow={banners[1]}
+            fallbackAdId="home-banner-2"
+            adSize="leaderboard"
+            padding="pb-8"
+          />
 
           {/* BITES */}
           {bites.length > 0 && (
@@ -149,16 +192,12 @@ export default async function Home({
             </section>
           )}
 
-          {/* Sidebar ad — medium rectangle */}
-          <div className="mx-auto max-w-[1400px] px-4 pb-12 sm:px-6">
-            <div className="flex justify-center">
-              <AdSlot
-                id="home-rectangle-1"
-                size="medium-rectangle"
-                className="max-w-[336px]"
-              />
-            </div>
-          </div>
+          <HomepageBannerRow
+            slideshow={banners[2] ?? banners[3]}
+            fallbackAdId="home-rectangle-1"
+            adSize="medium-rectangle"
+            padding="pb-12"
+          />
 
           {/* Book shop — bottom of homepage */}
           <BookShopStrip lang={lang} />
