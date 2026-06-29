@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/layout/Logo";
+import { SearchForm } from "@/components/layout/SearchForm";
 import { hrefWithLang, mainNav, t } from "@/lib/navigation";
 import type { WPLanguage } from "@/lib/types";
 
@@ -18,6 +19,9 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2 text-[11px] uppercase tracking-widest text-neutral-500 sm:px-6">
           <span>{lang === "th" ? "นิตยสารสถาปัตยกรรมและการออกแบบ" : "Architecture & Design Magazine"}</span>
           <div className="flex items-center gap-4">
+            <div className="hidden sm:block">
+              <SearchForm lang={lang} />
+            </div>
             <Link href={hrefWithLang("/contact/newsletter", lang)} className="hover:text-black">
               {lang === "th" ? "จดหมายข่าว" : "Newsletter"}
             </Link>
@@ -99,6 +103,9 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav className="border-t border-neutral-200 bg-white px-4 py-4 lg:hidden">
+          <div className="mb-4">
+            <SearchForm lang={lang} />
+          </div>
           <Link
             href={hrefWithLang("/", lang)}
             className="block py-2 text-sm font-medium uppercase tracking-widest"

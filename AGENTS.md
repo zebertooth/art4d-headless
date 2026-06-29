@@ -15,11 +15,12 @@ Migrate [art4d.com](https://art4d.com) from traditional WordPress to a **headles
 
 ## Current phase
 
-**Phase 2 — S3 + CloudFront image migration (in progress)**
+**Phase 1b — Website completion (in progress)**
 
-- Phase 1 demo live at `https://art4d-headless.vercel.app` (reads live WordPress API).
-- Next: AWS S3 bucket, CloudFront CDN, bulk media sync from `wp-content/uploads/`.
-- Run `npm run inventory` for baseline content counts before migration.
+- Demo live at `https://art4d-headless.vercel.app` (reads live WordPress API).
+- **Focus:** finish editorial site — QA, search, events content, mobile polish, then cutover to `art4d.com`.
+- **Deferred:** S3/CloudFront (Phase 2) and WooCommerce shop (Phase 3) until after the public site is done.
+- Images load from `art4d.com/wp-content/uploads/` — no AWS needed yet.
 - Main site at `art4d.com` is **untouched**.
 
 See `Timeline.md` for full roadmap.
@@ -123,11 +124,11 @@ images: {
 
 ## Migration strategy
 
-1. **Demo first** — deploy this repo to `demo.art4d.com`; production unchanged.
-2. **Read live API** — Phase 1 uses production WordPress as CMS (read-only).
-3. **Staging clone (optional)** — for S3 migration and WooCommerce tests, use a WP staging copy.
-4. **Parallel QA** — compare top 50–100 URLs on demo vs production.
-5. **Cutover** — point `art4d.com` DNS to Vercel; move WordPress admin to `cms.art4d.com`; keep rollback for 30 days.
+1. **Demo first** — deploy this repo to Vercel; production unchanged.
+2. **Read live API** — WordPress at `art4d.com` stays the CMS (read-only from frontend).
+3. **Website first** — complete pages, QA, search, then DNS cutover (Phase 4).
+4. **Infrastructure last** — S3/CDN and WooCommerce shop only after the editorial site is live.
+5. **Parallel QA** — compare top 50–100 URLs on demo vs production before cutover.
 
 ## Testing checklist (before production cutover)
 

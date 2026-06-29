@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { ArticleCard } from "@/components/articles/ArticleCard";
-import { Pagination } from "@/components/layout/Pagination";
+import { ArticleGrid } from "@/components/articles/ArticleGrid";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { buildCategoryMetadata } from "@/lib/seo/metadata";
@@ -54,8 +53,6 @@ export default async function CategoryPage({
 
   if (currentPage > totalPages && totalPages > 0) notFound();
 
-  const basePath = `/category/${slug}`;
-
   return (
     <SiteLayout lang={lang}>
       <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6">
@@ -63,23 +60,15 @@ export default async function CategoryPage({
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_300px]">
           <div>
-            <div className="archive-grid">
-              {posts.map((post) => (
-                <ArticleCard key={post.id} post={post} variant="default" />
-              ))}
-            </div>
-
-            {posts.length === 0 && (
-              <p className="text-neutral-500">
-                {lang === "th" ? "ไม่พบบทความ" : "No articles in this category."}
-              </p>
-            )}
-
-            <Pagination
+            <ArticleGrid
+              posts={posts}
               currentPage={currentPage}
               totalPages={totalPages}
-              basePath={basePath}
+              basePath={`/category/${slug}`}
               lang={lang}
+              emptyMessage={
+                lang === "th" ? "ไม่พบบทความ" : "No articles in this category."
+              }
             />
           </div>
 

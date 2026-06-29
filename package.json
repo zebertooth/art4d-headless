@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "inventory": "node scripts/wp-inventory.mjs"
+    "inventory": "node scripts/wp-inventory.mjs",
+    "audit": "node scripts/url-audit.mjs"
   },
   "dependencies": {
     "next": "16.2.9",

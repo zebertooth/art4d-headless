@@ -107,12 +107,14 @@ export function buildPageMetadata({
   path,
   lang = "en",
   image,
+  robots,
 }: {
   title: string;
   description?: string;
   path: string;
   lang?: WPLanguage;
   image?: string;
+  robots?: Metadata["robots"];
 }): Metadata {
   const desc = description ?? DEFAULT_DESCRIPTION[lang];
   const canonical = toAbsoluteUrl(path);
@@ -147,7 +149,7 @@ export function buildPageMetadata({
       description: desc,
       images: [ogImage],
     },
-    robots: { index: true, follow: true },
+    robots: robots ?? { index: true, follow: true },
   };
 }
 

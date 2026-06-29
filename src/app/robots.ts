@@ -1,16 +1,18 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/seo/site";
 
+const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
 export default function robots(): MetadataRoute.Robots {
   const siteUrl = getSiteUrl();
 
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      disallow: ["/api/"],
+      allow: allowIndexing ? "/" : undefined,
+      disallow: allowIndexing ? ["/api/"] : ["/"],
     },
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    sitemap: allowIndexing ? `${siteUrl}/sitemap.xml` : undefined,
+    host: allowIndexing ? siteUrl : undefined,
   };
 }

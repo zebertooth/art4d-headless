@@ -1,4 +1,4 @@
-import type { WPCategory, WPLanguage, WPPost } from "./types";
+import type { WPCategory, WPLanguage, WPPost, WPTag } from "./types";
 
 const API_BASE =
   process.env.WORDPRESS_API_URL ?? "https://art4d.com/wp-json";
@@ -150,4 +150,85 @@ export async function getPostsPage(
   const totalPages = Number(res.headers.get("X-WP-TotalPages") ?? 1);
   const posts = (await res.json()) as WPPost[];
   return { posts, totalPages };
+}
+
+export async function getTagBySlug(slug: string): Promise<WPTag | null> {
+  const tags = await wpFetch<WPTag[]>("/tags", { slug });
+  return tags[0] ?? null;
+}
+
+export async function getPostsByTagPaged(
+  tagId: number,
+  lang: WPLanguage = "en",
+  page = 1,
+  perPage = 24,
+): Promise<WPPagedResult<WPPost>> {
+  return wpFetchPaged<WPPost>("/posts", {
+    tags: tagId,
+    lang,
+    page,
+    per_page: perPage,
+    _embed: "1",
+  });
+}
+
+type WPSearchHit = { id: number; type: string; subtype: string };
+
+export async function searchPostsPaged(
+  query: string,
+  lang: WPLanguage = "en",
+  page = 1,
+  perPage = 24,
+): Promise<WPPagedResult<WPPost>> {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return { items: [], total: 0, totalPages: 0, page: 1 };
+  }
+
+  const url = new URL(`${API_BASE}/wp/v2/search`);
+  url.searchParams.set("search", trimmed);
+  url.searchParams.set("subtype", "post");
+  url.searchParams.set("lang", lang);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("per_page", String(perPage));
+
+  const res = await fetch(url.toString(), {
+    next: { revalidate: REVALIDATE },
+  });
+
+  if (!res.ok) {
+    return { items: [], total: 0, totalPages: 0, page };
+  }
+
+  const hits = (await res.json()) as WPSearchHit[];
+  const postIds = hits
+    .filter((hit) => hit.type === "post" && hit.subtype === "post")
+    .map((hit) => hit.id);
+
+  if (!postIds.length) {
+    return {
+      items: [],
+      total: Number(res.headers.get("X-WP-Total") ?? 0),
+      totalPages: Number(res.headers.get("X-WP-TotalPages") ?? 0),
+      page,
+    };
+  }
+
+  const posts = await wpFetch<WPPost[]>("/posts", {
+    include: postIds.join(","),
+    per_page: postIds.length,
+    _embed: "1",
+  });
+
+  const byId = new Map(posts.map((post) => [post.id, post]));
+  const ordered = postIds
+    .map((id) => byId.get(id))
+    .filter((post): post is WPPost => Boolean(post));
+
+  return {
+    items: ordered,
+    total: Number(res.headers.get("X-WP-Total") ?? ordered.length),
+    totalPages: Number(res.headers.get("X-WP-TotalPages") ?? 1),
+    page,
+  };
 }

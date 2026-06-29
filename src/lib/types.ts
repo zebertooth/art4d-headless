@@ -48,6 +48,13 @@ export interface WPCategory {
   count: number;
 }
 
+export interface WPTag {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+}
+
 export interface ArticlePath {
   lang: WPLanguage;
   year: string;

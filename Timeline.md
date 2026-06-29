@@ -11,10 +11,13 @@ Migration roadmap for moving art4d.com from WordPress theme to a headless Next.j
 | Phase | Name | Duration | Status |
 |-------|------|----------|--------|
 | 0 | Backup & inventory | ~1 week | ⏳ Pending |
-| 1 | Headless demo | ~4–6 weeks | ✅ Done |
-| 2 | S3 + CloudFront images | ~1–2 weeks | 🔄 In progress |
-| 3 | Image selling (WooCommerce) | ~1–2 weeks | ⏳ Pending |
-| 4 | Production cutover | ~1–2 weeks | ⏳ Pending |
+| 1 | Headless demo | ~4–6 weeks | ✅ Core done |
+| **1b** | **Website completion** | **~2–3 weeks** | **🔄 Current focus** |
+| 4 | Production cutover | ~1–2 weeks | ⏳ After 1b |
+| 2 | S3 + CloudFront images | ~1–2 weeks | ⏸️ Deferred (last) |
+| 3 | Image selling (WooCommerce) | ~1–2 weeks | ⏸️ Deferred (last) |
+
+**Priority:** Finish the full editorial website first (content, pages, QA, cutover). Images stay on `art4d.com/wp-content` until Phase 2. Shop/commerce comes last.
 
 **Total estimate:** ~2–3 months to production (Phases 1–4).
 
@@ -76,6 +79,40 @@ Build Next.js frontend reading **live** WordPress API. Production `art4d.com` un
 - [ ] Internal QA vs production (side-by-side, top 100 URLs)
 - [ ] Set `REVALIDATE_SECRET` on Vercel + WordPress publish webhook
 
+---
+
+## Phase 1b — Website completion (current)
+
+**Duration:** ~2–3 weeks  
+**Status:** 🔄 In progress  
+**Demo URL:** `https://art4d-headless.vercel.app`
+
+Finish the editorial site so it can replace the WordPress theme. **No S3 or shop work in this phase** — images continue loading from `art4d.com/wp-content/uploads/`.
+
+### Checklist
+
+- [x] **Content QA script** — `npm run audit` compares WP URLs vs demo
+- [x] **404 safety** — `/en/article/[slug]` and `/article/[slug]` fallbacks
+- [x] **Events / competition** — wired to WP (`update` category + search)
+- [x] **Search** — `/search?q=` with WP REST search API
+- [x] **Tag archives** — `/tag/[slug]` with pagination
+- [x] **Publish webhook** — `POST /api/revalidate` (see `docs/wp-revalidate.md`)
+- [ ] **Mobile + performance** — layout pass, Lighthouse on key templates
+- [x] **robots.txt** — noindex demo until `NEXT_PUBLIC_ALLOW_INDEXING=true`
+- [ ] **Team review** — design and navigation sign-off
+
+### Out of scope (deferred)
+
+- S3 / CloudFront image migration (Phase 2)
+- WooCommerce shop checkout (Phase 3)
+- `demo.art4d.com` DNS (optional; can use Vercel URL for now)
+
+### Exit criteria
+
+- All main nav sections work with real content
+- Top 100 URLs match production
+- Team approves replacing the public WordPress theme
+
 ### Week breakdown (estimate)
 
 | Week | Focus |
@@ -97,8 +134,8 @@ Build Next.js frontend reading **live** WordPress API. Production `art4d.com` un
 ## Phase 2 — S3 + CloudFront image migration
 
 **Duration:** ~1–2 weeks  
-**Status:** 🔄 In progress  
-**Depends on:** Phase 1 demo stable
+**Status:** ⏸️ Deferred — do after website launch  
+**Depends on:** Phase 4 cutover stable (or run in parallel on staging only)
 
 Move media off the WordPress server for speed, cost, and future commerce.
 
@@ -125,8 +162,8 @@ Move media off the WordPress server for speed, cost, and future commerce.
 ## Phase 3 — Image selling (self-hosted)
 
 **Duration:** ~1–2 weeks  
-**Status:** ⏳ Pending  
-**Depends on:** Phase 2 (S3 for secure downloads)
+**Status:** ⏸️ Deferred — last  
+**Depends on:** Phase 2 (S3 for secure downloads) + stable public site
 
 Sell images on own site only — **not** a contributor marketplace.
 
@@ -158,7 +195,7 @@ Sell images on own site only — **not** a contributor marketplace.
 
 **Duration:** ~1–2 weeks  
 **Status:** ⏳ Pending  
-**Depends on:** Phases 1–3 complete (or 1 only if shop deferred)
+**Depends on:** Phase 1b complete (shop and S3 **not** required)
 
 Switch `art4d.com` to the headless frontend.
 
@@ -212,6 +249,7 @@ Switch `art4d.com` to the headless frontend.
 | 2026-06-29 | Phase 1 started — Next.js scaffold, types, utils, docs |
 | 2026-06-29 | Phase 1 complete — Vercel deploy, SEO, pagination, revalidate API |
 | 2026-06-29 | Phase 2 started — `scripts/wp-inventory.mjs` for media migration prep |
+| 2026-06-29 | **Reprioritized** — Phase 1b website completion first; S3 + shop deferred to last |
 
 ---
 

@@ -2,8 +2,18 @@ import Link from "next/link";
 import { hrefWithLang } from "@/lib/navigation";
 import type { WPLanguage } from "@/lib/types";
 
-function pageHref(basePath: string, page: number, lang: WPLanguage): string {
-  const path = page <= 1 ? basePath : `${basePath}?page=${page}`;
+function pageHref(
+  basePath: string,
+  page: number,
+  lang: WPLanguage,
+  queryParams?: Record<string, string>,
+): string {
+  const params = new URLSearchParams(queryParams);
+  if (page > 1) params.set("page", String(page));
+  else params.delete("page");
+
+  const qs = params.toString();
+  const path = qs ? `${basePath}?${qs}` : basePath;
   return hrefWithLang(path, lang);
 }
 
@@ -12,11 +22,13 @@ export function Pagination({
   totalPages,
   basePath,
   lang,
+  queryParams,
 }: {
   currentPage: number;
   totalPages: number;
   basePath: string;
   lang: WPLanguage;
+  queryParams?: Record<string, string>;
 }) {
   if (totalPages <= 1) return null;
 
@@ -29,7 +41,7 @@ export function Pagination({
     >
       {currentPage > 1 ? (
         <PaginationLink
-          href={pageHref(basePath, currentPage - 1, lang)}
+          href={pageHref(basePath, currentPage - 1, lang, queryParams)}
           label={lang === "th" ? "ก่อนหน้า" : "Previous"}
         />
       ) : (
@@ -46,7 +58,7 @@ export function Pagination({
         ) : (
           <Link
             key={page}
-            href={pageHref(basePath, page, lang)}
+            href={pageHref(basePath, page, lang, queryParams)}
             aria-current={page === currentPage ? "page" : undefined}
             className={`min-w-10 px-3 py-2 text-center text-sm ${
               page === currentPage
@@ -61,7 +73,7 @@ export function Pagination({
 
       {currentPage < totalPages ? (
         <PaginationLink
-          href={pageHref(basePath, currentPage + 1, lang)}
+          href={pageHref(basePath, currentPage + 1, lang, queryParams)}
           label={lang === "th" ? "ถัดไป" : "Next"}
         />
       ) : (
