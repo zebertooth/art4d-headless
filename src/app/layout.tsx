@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DEFAULT_DESCRIPTION, getSiteUrl, OG_IMAGE, SITE_NAME } from "@/lib/seo/site";
+import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
