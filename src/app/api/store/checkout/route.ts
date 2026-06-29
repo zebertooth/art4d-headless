@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
     const token = await getCartTokenFromRequest(request);
     const { data, cartToken } = await getCheckout(token);
-    return jsonWithCartToken(data, cartToken);
+    return jsonWithCartToken(data, cartToken, undefined, token);
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Checkout error" },
@@ -34,7 +34,7 @@ export async function PUT(request: Request) {
         rate_id: string;
       };
       const shipping = await selectShippingRate(package_id, rate_id, token);
-      return jsonWithCartToken(shipping.data, shipping.cartToken);
+      return jsonWithCartToken(shipping.data, shipping.cartToken, undefined, token);
     }
 
     if (body.billing_address || body.shipping_address) {
@@ -45,11 +45,11 @@ export async function PUT(request: Request) {
         },
         token,
       );
-      return jsonWithCartToken(customer.data, customer.cartToken);
+      return jsonWithCartToken(customer.data, customer.cartToken, undefined, token);
     }
 
     const checkout = await updateCheckout(body, token);
-    return jsonWithCartToken(checkout.data, checkout.cartToken);
+    return jsonWithCartToken(checkout.data, checkout.cartToken, undefined, token);
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Checkout update error" },
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     };
 
     const { data, cartToken } = await processCheckout(body, token);
-    return jsonWithCartToken(data, cartToken);
+    return jsonWithCartToken(data, cartToken, undefined, token);
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Checkout error" },

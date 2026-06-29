@@ -1,12 +1,15 @@
 import { AdSlot } from "@/components/ads/AdSlot";
 import { ArticleCard } from "@/components/articles/ArticleCard";
-import { BookShopStrip, HeroFeature } from "@/components/home/HomeSections";
+import { HomeHeroSlider } from "@/components/home/HomeHeroSlider";
+import { BookShopStrip } from "@/components/home/HomeSections";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { WebsiteJsonLd } from "@/components/seo/ArticleJsonLd";
+import { heroOverlays } from "@/lib/home-hero";
 import { homeSections } from "@/lib/navigation";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import type { WPLanguage } from "@/lib/types";
+import { getPostHref, getFeaturedImage, decodeHtmlEntities, stripHtml } from "@/lib/utils";
 import { getCategoryBySlug, getPosts, getPostsByCategory } from "@/lib/wordpress";
 import type { Metadata } from "next";
 
@@ -59,7 +62,20 @@ export default async function Home({
     error = e instanceof Error ? e.message : "Failed to load posts";
   }
 
-  const heroPosts = latest.slice(0, 5);
+  const heroPosts = latest.slice(0, 8);
+  const heroSlides = heroPosts.flatMap((post, i) => {
+    const image = getFeaturedImage(post)?.src;
+    if (!image) return [];
+    return [
+      {
+        id: post.id,
+        href: getPostHref(post),
+        image,
+        title: decodeHtmlEntities(stripHtml(post.title.rendered)),
+        overlay: heroOverlays[i],
+      },
+    ];
+  });
   const gridPosts = latest.slice(5, 9);
 
   return (
@@ -71,8 +87,8 @@ export default async function Home({
         </div>
       ) : (
         <>
-          {/* Highlight — carousel-style hero */}
-          <HeroFeature posts={heroPosts} />
+          {/* Highlight — full-width hero slider (art4d.com style) */}
+          <HomeHeroSlider slides={heroSlides} />
 
           {/* Book shop strip */}
           <BookShopStrip lang={lang} />

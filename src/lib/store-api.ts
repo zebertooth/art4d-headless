@@ -2,6 +2,7 @@ import {
   CART_TOKEN_COOKIE,
   STORE_API,
   type WCCart,
+  type WCCartItem,
   type WCCheckout,
   type WCStoreProduct,
 } from "@/lib/store-types";
@@ -91,10 +92,78 @@ export async function getProductCategories() {
   return res.json();
 }
 
+/** Empty cart shell — avoids art4d.com GET /cart resetting the session token. */
+function emptyCartShell(): WCCart {
+  return {
+    items: [],
+    coupons: [],
+    totals: {
+      total_items: "0",
+      total_shipping: "0",
+      total_price: "0",
+      currency_code: "THB",
+      currency_minor_unit: 2,
+      currency_prefix: "฿",
+      currency_suffix: "",
+    },
+    shipping_address: {
+      first_name: "",
+      last_name: "",
+      company: "",
+      address_1: "",
+      address_2: "",
+      city: "",
+      state: "",
+      postcode: "",
+      country: "TH",
+      phone: "",
+    },
+    billing_address: {
+      first_name: "",
+      last_name: "",
+      company: "",
+      address_1: "",
+      address_2: "",
+      city: "",
+      state: "",
+      postcode: "",
+      country: "TH",
+      email: "",
+      phone: "",
+    },
+    needs_payment: false,
+    needs_shipping: false,
+    shipping_rates: [],
+    items_count: 0,
+    payment_methods: [],
+    errors: [],
+  };
+}
+
+/**
+ * Read cart. art4d WooCommerce resets GET /cart to an empty session when a
+ * Cart-Token is sent — use /cart/items + update-item to recover line items.
+ */
 export async function getCart(
   cartToken?: string | null,
 ): Promise<StoreFetchResult<WCCart>> {
-  return storeFetch<WCCart>("/cart", { cartToken });
+  if (!cartToken) {
+    return storeFetch<WCCart>("/cart", { cartToken });
+  }
+
+  const itemsResult = await storeFetch<WCCartItem[]>("/cart/items", {
+    cartToken,
+  });
+  const items = Array.isArray(itemsResult.data) ? itemsResult.data : [];
+
+  if (!items.length) {
+    return {
+      data: emptyCartShell(),
+      cartToken: itemsResult.cartToken ?? cartToken,
+    };
+  }
+
+  return updateCartItem(items[0].key, items[0].quantity, cartToken);
 }
 
 export async function addToCart(

@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         return Response.json({ error: "Invalid action" }, { status: 400 });
     }
 
-    return jsonWithCartToken(result.data, result.cartToken);
+    return jsonWithCartToken(result.data, result.cartToken, undefined, token);
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Cart error" },

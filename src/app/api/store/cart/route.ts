@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const token = await getCartTokenFromRequest(request);
     const { data, cartToken } = await getCart(token);
-    return jsonWithCartToken(data, cartToken);
+    return jsonWithCartToken(data, cartToken, undefined, token);
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Cart error" },

@@ -38,11 +38,16 @@ export async function storeFetch<T>(
   const newToken = res.headers.get("Cart-Token");
   if (newToken) setStoredCartToken(newToken);
 
-  const data = (await res.json()) as T & { error?: string };
+  const raw = (await res.json()) as T & { _cartToken?: string; error?: string };
 
-  if (!res.ok) {
-    throw new Error(data.error ?? `Request failed (${res.status})`);
+  if (raw._cartToken) {
+    setStoredCartToken(raw._cartToken);
+    delete raw._cartToken;
   }
 
-  return data;
+  if (!res.ok) {
+    throw new Error(raw.error ?? `Request failed (${res.status})`);
+  }
+
+  return raw as T;
 }
