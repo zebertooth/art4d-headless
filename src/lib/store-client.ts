@@ -1,5 +1,25 @@
 const STORAGE_KEY = "wc_cart_token";
 
+/** Turn Store API proxy errors into readable messages. */
+export function formatStoreError(message: string): string {
+  const jsonStart = message.indexOf("{");
+  if (jsonStart === -1) return message;
+
+  try {
+    const parsed = JSON.parse(message.slice(jsonStart)) as {
+      message?: string;
+      data?: { errors?: { billing?: string[]; shipping?: string[] } };
+    };
+    if (parsed.data?.errors?.billing?.[0]) return parsed.data.errors.billing[0];
+    if (parsed.data?.errors?.shipping?.[0]) return parsed.data.errors.shipping[0];
+    if (parsed.message) return parsed.message;
+  } catch {
+    // fall through
+  }
+
+  return message;
+}
+
 /** Read cart token saved from the last store API response. */
 export function getStoredCartToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -46,7 +66,7 @@ export async function storeFetch<T>(
   }
 
   if (!res.ok) {
-    throw new Error(raw.error ?? `Request failed (${res.status})`);
+    throw new Error(formatStoreError(raw.error ?? `Request failed (${res.status})`));
   }
 
   return raw as T;

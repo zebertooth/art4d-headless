@@ -6,6 +6,7 @@ import { hrefWithLang } from "@/lib/navigation";
 import { storeFetch } from "@/lib/store-client";
 import { PAYMENT_METHODS } from "@/lib/store-types";
 import type { WCCart, WCCheckout } from "@/lib/store-types";
+import { THAI_PROVINCES } from "@/lib/thai-provinces";
 import type { WPLanguage } from "@/lib/types";
 
 const emptyAddress = {
@@ -15,7 +16,7 @@ const emptyAddress = {
   address_1: "",
   address_2: "",
   city: "",
-  state: "",
+  state: "TH-10",
   postcode: "",
   country: "TH",
   email: "",
@@ -62,15 +63,21 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
 
     const shippingAddress = sameAsBilling
       ? { ...billing, email: undefined }
-      : shipping;
+      : { ...shipping, email: undefined };
+
+    const billingPayload = { ...billing, state: billing.state || "TH-10" };
+    const shippingPayload = {
+      ...shippingAddress,
+      state: shippingAddress.state || billingPayload.state,
+    };
 
     try {
       await storeFetch("/api/store/checkout", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          billing_address: billing,
-          shipping_address: shippingAddress,
+          billing_address: billingPayload,
+          shipping_address: shippingPayload,
         }),
       });
 
@@ -93,8 +100,8 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          billing_address: billing,
-          shipping_address: shippingAddress,
+          billing_address: billingPayload,
+          shipping_address: shippingPayload,
           payment_method: paymentMethod,
           customer_note: note,
         }),
@@ -152,6 +159,13 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
             <Field label={lang === "th" ? "โทรศัพท์" : "Phone"} value={billing.phone} onChange={(v) => updateBilling("phone", v)} required className="sm:col-span-2" />
             <Field label={lang === "th" ? "ที่อยู่" : "Address"} value={billing.address_1} onChange={(v) => updateBilling("address_1", v)} required className="sm:col-span-2" />
             <Field label={lang === "th" ? "เมือง" : "City"} value={billing.city} onChange={(v) => updateBilling("city", v)} required />
+            <ProvinceField
+              label={lang === "th" ? "จังหวัด" : "Province"}
+              value={billing.state}
+              onChange={(v) => updateBilling("state", v)}
+              lang={lang}
+              required
+            />
             <Field label={lang === "th" ? "รหัสไปรษณีย์" : "Postcode"} value={billing.postcode} onChange={(v) => updateBilling("postcode", v)} required />
           </div>
         </fieldset>
@@ -175,6 +189,13 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
                 <Field label={lang === "th" ? "นามสกุล" : "Last name"} value={shipping.last_name} onChange={(v) => updateShipping("last_name", v)} required />
                 <Field label={lang === "th" ? "ที่อยู่" : "Address"} value={shipping.address_1} onChange={(v) => updateShipping("address_1", v)} required className="sm:col-span-2" />
                 <Field label={lang === "th" ? "เมือง" : "City"} value={shipping.city} onChange={(v) => updateShipping("city", v)} required />
+                <ProvinceField
+                  label={lang === "th" ? "จังหวัด" : "Province"}
+                  value={shipping.state}
+                  onChange={(v) => updateShipping("state", v)}
+                  lang={lang}
+                  required
+                />
                 <Field label={lang === "th" ? "รหัสไปรษณีย์" : "Postcode"} value={shipping.postcode} onChange={(v) => updateShipping("postcode", v)} required />
               </div>
             )}
@@ -243,6 +264,43 @@ export function CheckoutForm({ lang }: { lang: WPLanguage }) {
         </div>
       </div>
     </form>
+  );
+}
+
+function ProvinceField({
+  label,
+  value,
+  onChange,
+  lang,
+  required,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  lang: WPLanguage;
+  required?: boolean;
+  className?: string;
+}) {
+  return (
+    <label className={`block text-sm ${className}`}>
+      {label}
+      <select
+        value={value}
+        required={required}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full border border-neutral-300 bg-white px-3 py-2"
+      >
+        <option value="" disabled>
+          {lang === "th" ? "เลือกจังหวัด" : "Select province"}
+        </option>
+        {THAI_PROVINCES.map((p) => (
+          <option key={p.code} value={p.code}>
+            {lang === "th" ? p.th : p.en}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
