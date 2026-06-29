@@ -83,3 +83,28 @@ export async function getPostsByCategory(
     _embed: "1",
   });
 }
+
+/** Fetch posts for sitemap generation (paginated). */
+export async function getPostsPage(
+  page: number,
+  lang: WPLanguage = "en",
+  perPage = 100,
+): Promise<{ posts: WPPost[]; totalPages: number }> {
+  const url = new URL(`${API_BASE}/wp/v2/posts`);
+  url.searchParams.set("lang", lang);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("per_page", String(perPage));
+  url.searchParams.set("_fields", "slug,date,modified,link,lang");
+
+  const res = await fetch(url.toString(), {
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) {
+    return { posts: [], totalPages: 0 };
+  }
+
+  const totalPages = Number(res.headers.get("X-WP-TotalPages") ?? 1);
+  const posts = (await res.json()) as WPPost[];
+  return { posts, totalPages };
+}

@@ -9,6 +9,7 @@ export interface WPPost {
   id: number;
   slug: string;
   date: string;
+  modified?: string;
   link: string;
   title: { rendered: string };
   content: { rendered: string };

@@ -3,7 +3,10 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { ArticleCard } from "@/components/articles/ArticleCard";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
+import { buildCategoryMetadata } from "@/lib/seo/metadata";
 import type { WPLanguage } from "@/lib/types";
+import type { Metadata } from "next";
+
 import { getCategoryBySlug, getPostsByCategory } from "@/lib/wordpress";
 
 export const revalidate = 60;
@@ -14,11 +17,13 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ lang?: string }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
+  const { lang: langParam } = await searchParams;
+  const lang: WPLanguage = langParam === "th" ? "th" : "en";
   const cat = await getCategoryBySlug(slug);
   if (!cat) return { title: "Category" };
-  return { title: cat.name };
+  return buildCategoryMetadata(cat.name, slug, lang);
 }
 
 export default async function CategoryPage({

@@ -27,22 +27,38 @@ export function decodeHtmlEntities(text: string): string {
 export function parseArticlePathFromLink(link: string): ArticlePath | null {
   try {
     const pathname = new URL(link).pathname;
-    const match = pathname.match(/^\/(en|th)\/(\d{4})\/(\d{2})\/([^/]+)\/?$/);
-    if (!match) return null;
 
-    return {
-      lang: match[1] as WPLanguage,
-      year: match[2],
-      month: match[3],
-      slug: match[4],
-    };
+    const enMatch = pathname.match(/^\/en\/(\d{4})\/(\d{2})\/([^/]+)\/?$/);
+    if (enMatch) {
+      return {
+        lang: "en",
+        year: enMatch[1],
+        month: enMatch[2],
+        slug: enMatch[3],
+      };
+    }
+
+    const thMatch = pathname.match(/^\/(\d{4})\/(\d{2})\/([^/]+)\/?$/);
+    if (thMatch) {
+      return {
+        lang: "th",
+        year: thMatch[1],
+        month: thMatch[2],
+        slug: thMatch[3],
+      };
+    }
+
+    return null;
   } catch {
     return null;
   }
 }
 
 export function buildArticleHref(path: ArticlePath): string {
-  return `/${path.lang}/${path.year}/${path.month}/${path.slug}`;
+  if (path.lang === "en") {
+    return `/en/${path.year}/${path.month}/${path.slug}`;
+  }
+  return `/${path.year}/${path.month}/${path.slug}`;
 }
 
 export function getPostHref(post: WPPost): string {

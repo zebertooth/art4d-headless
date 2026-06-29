@@ -22,7 +22,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
               {lang === "th" ? "จดหมายข่าว" : "Newsletter"}
             </Link>
             <Link
-              href={lang === "en" ? "/?lang=th" : "/"}
+              href={lang === "en" ? "/th" : "/"}
               className="font-semibold text-black"
             >
               {otherLang.toUpperCase()}

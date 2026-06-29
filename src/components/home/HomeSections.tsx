@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard } from "@/components/articles/ArticleCard";
 import type { WPPost } from "@/lib/types";
+import { hrefWithLang } from "@/lib/navigation";
 import { getPostHref, stripHtml, decodeHtmlEntities } from "@/lib/utils";
 
 export function HeroFeature({ posts }: { posts: WPPost[] }) {
@@ -38,7 +39,7 @@ export function BookShopStrip({ lang }: { lang: "en" | "th" }) {
           </h2>
         </div>
         <Link
-          href={lang === "th" ? "/shop?lang=th" : "/shop"}
+          href={hrefWithLang("/shop", lang)}
           className="border border-white px-6 py-3 text-xs font-medium uppercase tracking-widest hover:bg-white hover:text-black"
         >
           {lang === "th" ? "ไปที่ร้านค้า" : "Visit shop"}

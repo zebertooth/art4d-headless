@@ -89,8 +89,8 @@ export const homeSections = {
 
 export function hrefWithLang(href: string, lang: WPLanguage): string {
   if (lang === "en") return href;
-  const sep = href.includes("?") ? "&" : "?";
-  return `${href}${sep}lang=th`;
+  if (href === "/") return "/th";
+  return `/th${href.startsWith("/") ? href : `/${href}`}`;
 }
 
 export function t(item: { label: Record<WPLanguage, string> }, lang: WPLanguage): string {

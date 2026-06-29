@@ -3,11 +3,32 @@ import { ArticleCard } from "@/components/articles/ArticleCard";
 import { BookShopStrip, HeroFeature } from "@/components/home/HomeSections";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
+import { WebsiteJsonLd } from "@/components/seo/ArticleJsonLd";
 import { homeSections } from "@/lib/navigation";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import type { WPLanguage } from "@/lib/types";
 import { getCategoryBySlug, getPosts, getPostsByCategory } from "@/lib/wordpress";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang: langParam } = await searchParams;
+  const lang: WPLanguage = langParam === "th" ? "th" : "en";
+
+  return buildPageMetadata({
+    title:
+      lang === "th"
+        ? "art4d | นิตยสารสถาปัตยกรรม การออกแบบ และศิลปะ"
+        : "art4d | Architecture, Design & Art Magazine",
+    path: lang === "th" ? "/th" : "/",
+    lang,
+  });
+}
 
 async function loadCategoryPosts(slug: string, lang: WPLanguage, count: number) {
   const cat = await getCategoryBySlug(slug);
@@ -43,6 +64,7 @@ export default async function Home({
 
   return (
     <SiteLayout lang={lang}>
+      <WebsiteJsonLd />
       {error ? (
         <div className="mx-auto max-w-[1400px] px-4 py-16 text-center text-red-700">
           {error}
