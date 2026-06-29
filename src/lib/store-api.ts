@@ -140,9 +140,48 @@ function emptyCartShell(): WCCart {
   };
 }
 
+/** Build a cart view from /cart/items (avoids broken GET /cart and flaky update-item). */
+function cartFromItems(
+  items: WCCartItem[],
+  cartToken: string | null,
+): StoreFetchResult<WCCart> {
+  if (!items.length) {
+    return { data: emptyCartShell(), cartToken };
+  }
+
+  const shell = emptyCartShell();
+  const { prices } = items[0];
+
+  let totalMinor = 0;
+  let itemsCount = 0;
+  for (const item of items) {
+    itemsCount += item.quantity;
+    totalMinor += Number(item.totals.line_total);
+  }
+
+  return {
+    data: {
+      ...shell,
+      items,
+      items_count: itemsCount,
+      totals: {
+        total_items: String(totalMinor),
+        total_shipping: "0",
+        total_price: String(totalMinor),
+        currency_code: prices.currency_code,
+        currency_minor_unit: prices.currency_minor_unit,
+        currency_prefix: prices.currency_prefix,
+        currency_suffix: prices.currency_suffix,
+      },
+      needs_payment: totalMinor > 0,
+    },
+    cartToken,
+  };
+}
+
 /**
  * Read cart. art4d WooCommerce resets GET /cart to an empty session when a
- * Cart-Token is sent — use /cart/items + update-item to recover line items.
+ * Cart-Token is sent — assemble the cart from /cart/items instead.
  */
 export async function getCart(
   cartToken?: string | null,
@@ -156,14 +195,7 @@ export async function getCart(
   });
   const items = Array.isArray(itemsResult.data) ? itemsResult.data : [];
 
-  if (!items.length) {
-    return {
-      data: emptyCartShell(),
-      cartToken: itemsResult.cartToken ?? cartToken,
-    };
-  }
-
-  return updateCartItem(items[0].key, items[0].quantity, cartToken);
+  return cartFromItems(items, itemsResult.cartToken ?? cartToken);
 }
 
 export async function addToCart(

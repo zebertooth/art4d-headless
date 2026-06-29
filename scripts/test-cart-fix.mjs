@@ -1,4 +1,4 @@
-/** Test getCart workaround logic against live WP */
+/** Test getCart via items assembly against live WP */
 const STORE = "https://art4d.com/wp-json/wc/store/v1";
 
 let token = null;
@@ -12,30 +12,32 @@ async function storeFetch(path, opts = {}) {
   return res.json();
 }
 
+function cartFromItems(items, cartToken) {
+  if (!items.length) return { items_count: 0, items: [] };
+  let total = 0;
+  let count = 0;
+  for (const item of items) {
+    count += item.quantity;
+    total += Number(item.totals.line_total);
+  }
+  return { items_count: count, items, totals: { total_price: String(total) } };
+}
+
 async function getCart(cartToken) {
   if (!cartToken) return storeFetch("/cart");
-
   const items = await storeFetch("/cart/items", {
     headers: { "Cart-Token": cartToken },
   });
-  if (!Array.isArray(items) || !items.length) {
-    return { items_count: 0, items: [] };
-  }
-
-  return storeFetch("/cart/update-item", {
-    method: "POST",
-    headers: { "Cart-Token": cartToken },
-    body: JSON.stringify({ key: items[0].key, quantity: items[0].quantity }),
-  });
+  return cartFromItems(Array.isArray(items) ? items : [], cartToken);
 }
 
-const empty = await getCart(null);
-token = null;
+await storeFetch("/cart");
 const added = await storeFetch("/cart/add-item", {
   method: "POST",
-  body: JSON.stringify({ id: 119603, quantity: 1 }),
+  body: JSON.stringify({ id: 119270, quantity: 1 }),
 });
 const addToken = token;
 const cart = await getCart(addToken);
-console.log("add items", added.items_count, "getCart items", cart.items_count);
+console.log("getCart items", cart.items_count, "lines", cart.items?.length);
 process.exit(cart.items_count > 0 ? 0 : 1);
+
