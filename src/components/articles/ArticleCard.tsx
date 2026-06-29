@@ -44,19 +44,19 @@ export function ArticleCard({
           )}
           <div className="mt-5 max-w-2xl">
             {category && (
-              <p className="text-meta-sm font-medium uppercase tracking-[0.3em] text-neutral-500">
+              <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-500">
                 {category}
               </p>
             )}
-            <h2 className="text-article-title mt-2 text-black">
+            <h2 className="mt-2 font-display text-3xl leading-tight text-black sm:text-4xl lg:text-5xl">
               {title}
             </h2>
             {excerpt && (
-              <p className="text-entry-summary mt-3 line-clamp-2 text-neutral-600">
+              <p className="mt-3 line-clamp-2 text-base leading-relaxed text-neutral-600">
                 {excerpt}
               </p>
             )}
-            <time className="text-meta mt-4 block text-neutral-400">
+            <time className="mt-4 block text-xs text-neutral-400">
               {formatPostDate(post.date, lang)}
             </time>
           </div>
@@ -81,11 +81,11 @@ export function ArticleCard({
         </Link>
         <div>
           {category && (
-            <p className="text-meta-sm font-medium uppercase tracking-[0.25em] text-neutral-500">
+            <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-neutral-500">
               {category}
             </p>
           )}
-          <h3 className="text-card-title mt-1 text-black group-hover:underline">
+          <h3 className="mt-1 text-sm font-medium leading-snug text-black group-hover:underline sm:text-base">
             <Link href={href}>{title}</Link>
           </h3>
         </div>
@@ -108,7 +108,7 @@ export function ArticleCard({
               />
             </div>
           )}
-          <h3 className="mt-3 text-[12pt] leading-[12pt] text-black group-hover:underline">
+          <h3 className="mt-3 text-sm font-medium leading-snug text-black group-hover:underline">
             {title}
           </h3>
         </Link>
@@ -135,21 +135,21 @@ export function ArticleCard({
       </Link>
       <div className="flex flex-1 flex-col pt-4">
         {category && (
-          <p className="text-meta-sm font-medium uppercase tracking-[0.3em] text-neutral-500">
+          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-500">
             {category}
           </p>
         )}
-        <h3 className="text-card-title mt-2 text-black">
+        <h3 className="mt-2 font-display text-xl leading-snug text-black">
           <Link href={href} className="hover:underline">
             {title}
           </Link>
         </h3>
         {excerpt && variant === "default" && (
-          <p className="text-entry-summary mt-2 line-clamp-2 text-neutral-600">
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-neutral-600">
             {excerpt}
           </p>
         )}
-        <time className="text-date-sm mt-auto pt-3 text-neutral-400">
+        <time className="mt-auto pt-3 text-[11px] text-neutral-400">
           {formatPostDate(post.date, lang)}
         </time>
       </div>

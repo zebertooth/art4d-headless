@@ -40,22 +40,22 @@ export async function renderArticlePage(slug: string, lang: WPLanguage) {
         <header className="mx-auto max-w-4xl px-4 pt-10 sm:px-6 sm:pt-16">
           <Link
             href={hrefWithLang("/", lang)}
-            className="text-meta-sm font-medium uppercase tracking-widest text-neutral-500 hover:text-black"
+            className="text-[11px] font-medium uppercase tracking-widest text-neutral-500 hover:text-black"
           >
             ← {lang === "th" ? "หน้าแรก" : "Home"}
           </Link>
 
           {category && (
-            <p className="text-meta-sm mt-8 font-medium uppercase tracking-[0.3em] text-neutral-500">
+            <p className="mt-8 text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-500">
               {category}
             </p>
           )}
 
-          <h1 className="text-article-title mt-4 text-black">
+          <h1 className="mt-4 font-display text-4xl leading-[1.1] text-black sm:text-5xl lg:text-6xl">
             {title}
           </h1>
 
-          <div className="text-meta mt-6 flex flex-wrap items-center gap-4 border-b border-neutral-200 pb-8 text-neutral-500">
+          <div className="mt-6 flex flex-wrap items-center gap-4 border-b border-neutral-200 pb-8 text-sm text-neutral-500">
             {post.author_info?.display_name && (
               <span>{post.author_info.display_name}</span>
             )}

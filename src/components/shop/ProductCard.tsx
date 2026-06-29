@@ -47,7 +47,7 @@ export function ProductCard({
             {category}
           </p>
         )}
-        <h3 className="text-card-title mt-2 text-black">
+        <h3 className="mt-2 font-display text-xl leading-snug text-black">
           <Link
             href={hrefWithLang(`/shop/${product.slug}`, lang)}
             className="hover:underline"
@@ -55,7 +55,7 @@ export function ProductCard({
             {stripProductHtml(product.name)}
           </Link>
         </h3>
-        <p className="mt-auto pt-3 text-[12pt] font-medium text-black">{price}</p>
+        <p className="mt-auto pt-3 text-sm font-medium text-black">{price}</p>
       </div>
     </article>
   );

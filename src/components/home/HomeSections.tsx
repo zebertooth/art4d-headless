@@ -31,16 +31,16 @@ export function BookShopStrip({ lang }: { lang: "en" | "th" }) {
     <section className="border-t border-neutral-200 bg-neutral-200 text-black">
       <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
         <div>
-          <p className="text-meta-sm font-medium uppercase tracking-[0.3em] text-neutral-600">
+          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-600">
             {lang === "th" ? "ร้านหนังสือ" : "Book Shop"}
           </p>
-          <h2 className="text-card-title mt-2">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl">
             {lang === "th" ? "หนังสือและสิ่งพิมพ์จาก art4d" : "Books & publications from art4d"}
           </h2>
         </div>
         <Link
           href={hrefWithLang("/shop", lang)}
-          className="border border-black px-6 py-3 text-[12pt] font-medium uppercase tracking-widest hover:bg-black hover:text-white"
+          className="border border-black px-6 py-3 text-xs font-medium uppercase tracking-widest hover:bg-black hover:text-white"
         >
           {lang === "th" ? "ไปที่ร้านค้า" : "Visit shop"}
         </Link>

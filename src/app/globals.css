@@ -30,68 +30,6 @@
   font-family: var(--font-body);
 }
 
-/* art4d.com typography — from WP Custom CSS + weta theme */
-body {
-  font-size: 12pt;
-  line-height: 1.55;
-  color: #555;
-}
-
-.text-nav-primary {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  line-height: 1.25;
-}
-
-@media (min-width: 1024px) {
-  .text-nav-primary {
-    font-size: 31px;
-  }
-}
-
-.text-nav-sub {
-  font-size: 14pt;
-  line-height: 14pt;
-}
-
-.text-section-title {
-  font-family: var(--font-display);
-  font-size: 40px;
-  line-height: 40px;
-}
-
-.text-card-title {
-  font-family: var(--font-display);
-  font-size: 20pt;
-  line-height: 20pt;
-}
-
-.text-article-title {
-  font-family: var(--font-display);
-  font-size: 22pt;
-  line-height: 30px;
-}
-
-.text-entry-summary {
-  font-size: 12pt;
-  line-height: 15pt;
-}
-
-.text-meta {
-  font-size: 12pt;
-  line-height: 12pt;
-}
-
-.text-meta-sm {
-  font-size: 10pt;
-  line-height: 10pt;
-}
-
-.text-date-sm {
-  font-size: 8pt;
-  line-height: 8pt;
-}
-
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -104,8 +42,8 @@ body {
 /* Editorial article body */
 .article-content {
   font-family: var(--font-body);
-  font-size: 12pt;
-  line-height: 21px;
+  font-size: 1.0625rem;
+  line-height: 1.8;
 }
 
 .article-content img {
@@ -124,8 +62,7 @@ body {
   margin-bottom: 0.75rem;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 1.3125rem;
-  line-height: 1.4;
+  font-size: 1.5rem;
 }
 
 .article-content a {
