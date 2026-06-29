@@ -58,12 +58,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Recent articles — first 20 pages × 100 posts per language
+  // All published articles for sitemap
   for (const lang of ["en", "th"] as const) {
     let page = 1;
     let totalPages = 1;
 
-    while (page <= totalPages && page <= 20) {
+    while (page <= totalPages) {
       const result = await getPostsPage(page, lang, 100);
       totalPages = result.totalPages;
 

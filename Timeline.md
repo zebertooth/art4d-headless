@@ -11,8 +11,8 @@ Migration roadmap for moving art4d.com from WordPress theme to a headless Next.j
 | Phase | Name | Duration | Status |
 |-------|------|----------|--------|
 | 0 | Backup & inventory | ~1 week | ⏳ Pending |
-| 1 | Headless demo | ~4–6 weeks | 🔄 In progress |
-| 2 | S3 + CloudFront images | ~1–2 weeks | ⏳ Pending |
+| 1 | Headless demo | ~4–6 weeks | ✅ Done |
+| 2 | S3 + CloudFront images | ~1–2 weeks | 🔄 In progress |
 | 3 | Image selling (WooCommerce) | ~1–2 weeks | ⏳ Pending |
 | 4 | Production cutover | ~1–2 weeks | ⏳ Pending |
 
@@ -47,11 +47,11 @@ Establish a safe baseline before any infrastructure or frontend changes.
 
 ---
 
-## Phase 1 — Headless demo (current)
+## Phase 1 — Headless demo
 
 **Duration:** ~4–6 weeks  
-**Status:** 🔄 In progress  
-**Demo URL (planned):** `https://demo.art4d.com`
+**Status:** ✅ Done  
+**Demo URL:** `https://art4d-headless.vercel.app` (custom `demo.art4d.com` pending)
 
 Build Next.js frontend reading **live** WordPress API. Production `art4d.com` unchanged.
 
@@ -59,23 +59,22 @@ Build Next.js frontend reading **live** WordPress API. Production `art4d.com` un
 
 - [x] Next.js 16 project scaffolded (`art4d-headless`)
 - [x] TypeScript + Tailwind CSS v4
-- [x] `npm install` — dependencies installed
-- [x] WordPress types (`src/lib/types.ts`)
-- [x] URL utilities for `/en/YYYY/MM/slug` (`src/lib/utils.ts`)
-- [x] `.env.example` with API URL and revalidation settings
-- [x] Project docs (`CLAUDE.md`, `AGENTS.md`, `Timeline.md`)
+- [x] WordPress API client (`src/lib/wordpress.ts`) with pagination metadata
+- [x] Homepage — hero, latest, Bites, Photo Essay from WP
+- [x] Article pages — `/en/YYYY/MM/slug` and `/YYYY/MM/slug` (TH)
+- [x] Category archives with pagination (24 per page)
+- [x] Header with EN / TH language switch (`/th` middleware)
+- [x] `next/image` + `remotePatterns` for art4d.com uploads
+- [x] SEO metadata, JSON-LD, sitemap, robots.txt
+- [x] Deploy to Vercel
+- [x] On-demand revalidation API (`POST /api/revalidate`)
+- [x] Full sitemap (all EN + TH posts)
 
-### In progress / next
+### Remaining (optional before cutover)
 
-- [ ] `src/lib/wordpress.ts` API client
-- [ ] Homepage — latest articles from WP
-- [ ] Article page route `[lang]/[year]/[month]/[slug]`
-- [ ] Category archive pages
-- [ ] Header with EN / TH language switch
-- [ ] `next/image` + `remotePatterns` for art4d.com uploads
-- [ ] SEO metadata from post data
-- [ ] Deploy to Vercel → `demo.art4d.com`
-- [ ] Internal QA vs production (side-by-side)
+- [ ] Custom domain `demo.art4d.com`
+- [ ] Internal QA vs production (side-by-side, top 100 URLs)
+- [ ] Set `REVALIDATE_SECRET` on Vercel + WordPress publish webhook
 
 ### Week breakdown (estimate)
 
@@ -98,13 +97,14 @@ Build Next.js frontend reading **live** WordPress API. Production `art4d.com` un
 ## Phase 2 — S3 + CloudFront image migration
 
 **Duration:** ~1–2 weeks  
-**Status:** ⏳ Pending  
+**Status:** 🔄 In progress  
 **Depends on:** Phase 1 demo stable
 
 Move media off the WordPress server for speed, cost, and future commerce.
 
 ### Checklist
 
+- [ ] Run `npm run inventory` — baseline post/category counts
 - [ ] Create AWS S3 bucket (private originals)
 - [ ] CloudFront distribution in front of S3
 - [ ] Bulk upload `wp-content/uploads/` to S3 (preserve paths)
@@ -210,8 +210,8 @@ Switch `art4d.com` to the headless frontend.
 | Date | Update |
 |------|--------|
 | 2026-06-29 | Phase 1 started — Next.js scaffold, types, utils, docs |
-| — | Phase 0 backup not yet started |
-| — | Demo deploy to `demo.art4d.com` not yet started |
+| 2026-06-29 | Phase 1 complete — Vercel deploy, SEO, pagination, revalidate API |
+| 2026-06-29 | Phase 2 started — `scripts/wp-inventory.mjs` for media migration prep |
 
 ---
 

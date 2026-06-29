@@ -15,10 +15,11 @@ Migrate [art4d.com](https://art4d.com) from traditional WordPress to a **headles
 
 ## Current phase
 
-**Phase 1 — Headless demo (in progress)**
+**Phase 2 — S3 + CloudFront image migration (in progress)**
 
-- Next.js app scaffolded; WordPress types and URL utilities in place.
-- Next: API client, homepage, article pages, EN/TH routing, deploy to `demo.art4d.com`.
+- Phase 1 demo live at `https://art4d-headless.vercel.app` (reads live WordPress API).
+- Next: AWS S3 bucket, CloudFront CDN, bulk media sync from `wp-content/uploads/`.
+- Run `npm run inventory` for baseline content counts before migration.
 - Main site at `art4d.com` is **untouched**.
 
 See `Timeline.md` for full roadmap.

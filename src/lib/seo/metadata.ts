@@ -155,17 +155,29 @@ export function buildCategoryMetadata(
   name: string,
   slug: string,
   lang: WPLanguage,
+  page = 1,
 ): Metadata {
-  const title = lang === "th" ? `${name} | บทความ` : `${name} | Articles`;
+  const pageSuffix = page > 1 ? (lang === "th" ? ` — หน้า ${page}` : ` — Page ${page}`) : "";
+  const title =
+    lang === "th" ? `${name} | บทความ${pageSuffix}` : `${name} | Articles${pageSuffix}`;
   const description =
     lang === "th"
       ? `บทความหมวด ${name} จาก art4d`
       : `${name} articles from art4d — architecture, design and art magazine.`;
 
+  const path =
+    page > 1
+      ? lang === "th"
+        ? `/th/category/${slug}?page=${page}`
+        : `/category/${slug}?page=${page}`
+      : lang === "th"
+        ? `/th/category/${slug}`
+        : `/category/${slug}`;
+
   return buildPageMetadata({
     title,
     description,
-    path: lang === "th" ? `/th/category/${slug}` : `/category/${slug}`,
+    path,
     lang,
   });
 }

@@ -5,6 +5,39 @@ const API_BASE =
 
 const REVALIDATE = Number(process.env.REVALIDATE_SECONDS ?? 60);
 
+export type WPPagedResult<T> = {
+  items: T[];
+  total: number;
+  totalPages: number;
+  page: number;
+};
+
+async function wpFetchPaged<T>(
+  path: string,
+  params: Record<string, string | number> = {},
+): Promise<WPPagedResult<T>> {
+  const url = new URL(`${API_BASE}/wp/v2${path}`);
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, String(value));
+  }
+
+  const res = await fetch(url.toString(), {
+    next: { revalidate: REVALIDATE },
+  });
+
+  if (!res.ok) {
+    throw new Error(`WordPress API error ${res.status}: ${url.pathname}`);
+  }
+
+  const page = Number(params.page ?? 1);
+  return {
+    items: (await res.json()) as T[],
+    total: Number(res.headers.get("X-WP-Total") ?? 0),
+    totalPages: Number(res.headers.get("X-WP-TotalPages") ?? 1),
+    page,
+  };
+}
+
 async function wpFetch<T>(
   path: string,
   params: Record<string, string | number> = {},
@@ -75,7 +108,17 @@ export async function getPostsByCategory(
   page = 1,
   perPage = 12,
 ): Promise<WPPost[]> {
-  return wpFetch<WPPost[]>("/posts", {
+  const result = await getPostsByCategoryPaged(categoryId, lang, page, perPage);
+  return result.items;
+}
+
+export async function getPostsByCategoryPaged(
+  categoryId: number,
+  lang: WPLanguage = "en",
+  page = 1,
+  perPage = 24,
+): Promise<WPPagedResult<WPPost>> {
+  return wpFetchPaged<WPPost>("/posts", {
     categories: categoryId,
     lang,
     page,
