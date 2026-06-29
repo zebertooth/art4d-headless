@@ -17,7 +17,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
     <header className="sticky top-0 z-50 border-b border-black bg-white">
       {/* Top bar */}
       <div className="border-b border-neutral-100">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2 text-[11px] uppercase tracking-widest text-neutral-500 sm:px-6">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2 text-[14px] uppercase tracking-widest text-neutral-500 sm:px-6">
           <span>{lang === "th" ? "นิตยสารสถาปัตยกรรมและการออกแบบ" : "Architecture & Design Magazine"}</span>
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
@@ -56,7 +56,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
           <nav className="hidden items-center gap-1 lg:flex">
             <Link
               href={hrefWithLang("/", lang)}
-              className="px-3 py-2 text-xs font-medium uppercase tracking-widest text-black hover:bg-neutral-50"
+              className="text-nav-primary px-3 py-2 font-medium uppercase tracking-wide text-black hover:bg-neutral-50"
             >
               {lang === "th" ? "หน้าแรก" : "Home"}
             </Link>
@@ -69,7 +69,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
               >
                 <Link
                   href={hrefWithLang(item.href, lang)}
-                  className="px-3 py-2 text-xs font-medium uppercase tracking-widest text-neutral-700 hover:text-black"
+                  className="text-nav-primary px-3 py-2 font-medium uppercase tracking-wide text-neutral-700 hover:text-black"
                 >
                   {t(item, lang)}
                 </Link>
@@ -79,7 +79,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
                       <div key={child.href}>
                         <Link
                           href={hrefWithLang(child.href, lang)}
-                          className="block px-4 py-2 text-xs uppercase tracking-wider text-neutral-700 hover:bg-neutral-50 hover:text-black"
+                          className="text-nav-sub block px-4 py-2 uppercase tracking-wider text-neutral-700 hover:bg-neutral-50 hover:text-black"
                         >
                           {t(child, lang)}
                         </Link>
@@ -87,7 +87,7 @@ export function SiteHeader({ lang }: { lang: WPLanguage }) {
                           <Link
                             key={sub.href}
                             href={hrefWithLang(sub.href, lang)}
-                            className="block py-1.5 pl-8 pr-4 text-[11px] text-neutral-500 hover:text-black"
+                            className="text-nav-sub block py-1.5 pl-8 pr-4 text-neutral-500 hover:text-black"
                           >
                             {t(sub, lang)}
                           </Link>

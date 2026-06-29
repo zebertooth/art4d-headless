@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
-import { AdSlot } from "@/components/ads/AdSlot";
-import { ArticleGrid } from "@/components/articles/ArticleGrid";
+import { AdOneColumn } from "@/components/ads/AdColumns";
+import { ArchiveGridWithAds } from "@/components/ads/ArchiveGridWithAds";
+import { MobileAdStack } from "@/components/ads/MobileAdStack";
+import { StickyAdRail } from "@/components/ads/StickyAdRail";
+import { Pagination } from "@/components/layout/Pagination";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { buildCategoryMetadata } from "@/lib/seo/metadata";
@@ -60,24 +63,42 @@ export default async function CategoryPage({
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_300px]">
           <div>
-            <ArticleGrid
-              posts={posts}
+            <AdOneColumn
+              id={`cat-${slug}-top`}
+              size="leaderboard"
+              className="mb-8"
+            />
+
+            {posts.length > 0 ? (
+              <ArchiveGridWithAds posts={posts} adIdPrefix={`cat-${slug}`} />
+            ) : (
+              <p className="text-neutral-500">
+                {lang === "th" ? "ไม่พบบทความ" : "No articles in this category."}
+              </p>
+            )}
+
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               basePath={`/category/${slug}`}
               lang={lang}
-              emptyMessage={
-                lang === "th" ? "ไม่พบบทความ" : "No articles in this category."
-              }
+            />
+
+            <MobileAdStack
+              slots={[
+                { id: `cat-${slug}-mobile-1`, size: "medium-rectangle" },
+                { id: `cat-${slug}-mobile-2`, size: "medium-rectangle" },
+                { id: `cat-${slug}-mobile-banner`, size: "leaderboard" },
+              ]}
             />
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-28 space-y-8">
-              <AdSlot id={`cat-${slug}-sidebar`} size="medium-rectangle" />
-              <AdSlot id={`cat-${slug}-sidebar-2`} size="medium-rectangle" />
-            </div>
-          </aside>
+          <StickyAdRail
+            slots={[
+              { id: `cat-${slug}-sidebar`, size: "medium-rectangle" },
+              { id: `cat-${slug}-sidebar-2`, size: "medium-rectangle" },
+            ]}
+          />
         </div>
       </div>
     </SiteLayout>

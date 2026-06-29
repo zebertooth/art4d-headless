@@ -90,9 +90,6 @@ export default async function Home({
           {/* Highlight — full-width hero slider (art4d.com style) */}
           <HomeHeroSlider slides={heroSlides} />
 
-          {/* Book shop strip */}
-          <BookShopStrip lang={lang} />
-
           {/* Ad position 1 */}
           <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
             <AdSlot id="home-banner-1" size="billboard" />
@@ -162,6 +159,9 @@ export default async function Home({
               />
             </div>
           </div>
+
+          {/* Book shop — bottom of homepage */}
+          <BookShopStrip lang={lang} />
         </>
       )}
     </SiteLayout>

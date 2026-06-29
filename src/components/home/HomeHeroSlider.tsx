@@ -65,11 +65,11 @@ export function HomeHeroSlider({ slides }: { slides: HeroSlide[] }) {
             )}
 
             <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-10 sm:px-10 sm:pb-14">
-              <h2 className="max-w-3xl font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+              <h2 className="text-article-title max-w-3xl text-white">
                 {s.title}
               </h2>
               {s.overlay?.subtitle && (
-                <p className="mt-2 max-w-2xl text-lg text-white/90 sm:text-xl">
+                <p className="text-entry-summary mt-2 max-w-2xl text-white/90">
                   {s.overlay.subtitle}
                 </p>
               )}

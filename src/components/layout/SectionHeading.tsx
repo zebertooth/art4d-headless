@@ -24,12 +24,12 @@ export function SectionHeading({
         {href ? (
           <Link
             href={hrefWithLang(href, lang)}
-            className="font-display text-2xl font-normal tracking-tight text-black hover:opacity-70 sm:text-3xl"
+            className="text-section-title font-normal tracking-tight text-black hover:opacity-70"
           >
             {title}
           </Link>
         ) : (
-          <h2 className="font-display text-2xl font-normal tracking-tight text-black sm:text-3xl">
+          <h2 className="text-section-title font-normal tracking-tight text-black">
             {title}
           </h2>
         )}
@@ -37,7 +37,7 @@ export function SectionHeading({
       {href && (
         <Link
           href={hrefWithLang(href, lang)}
-          className="hidden text-xs font-medium uppercase tracking-widest text-neutral-500 hover:text-black sm:block"
+          className="hidden text-[10pt] font-medium uppercase tracking-widest text-neutral-500 hover:text-black sm:block"
         >
           {lang === "th" ? "ดูทั้งหมด" : "View all"}
         </Link>

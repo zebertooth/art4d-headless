@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AdSlot } from "@/components/ads/AdSlot";
+import { AdOneColumn, AdTwoColumn } from "@/components/ads/AdColumns";
+import { MobileAdStack } from "@/components/ads/MobileAdStack";
+import { StickyAdRail } from "@/components/ads/StickyAdRail";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { hrefWithLang } from "@/lib/navigation";
@@ -38,22 +40,22 @@ export async function renderArticlePage(slug: string, lang: WPLanguage) {
         <header className="mx-auto max-w-4xl px-4 pt-10 sm:px-6 sm:pt-16">
           <Link
             href={hrefWithLang("/", lang)}
-            className="text-[11px] font-medium uppercase tracking-widest text-neutral-500 hover:text-black"
+            className="text-meta-sm font-medium uppercase tracking-widest text-neutral-500 hover:text-black"
           >
             ← {lang === "th" ? "หน้าแรก" : "Home"}
           </Link>
 
           {category && (
-            <p className="mt-8 text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-500">
+            <p className="text-meta-sm mt-8 font-medium uppercase tracking-[0.3em] text-neutral-500">
               {category}
             </p>
           )}
 
-          <h1 className="mt-4 font-display text-4xl leading-[1.1] text-black sm:text-5xl lg:text-6xl">
+          <h1 className="text-article-title mt-4 text-black">
             {title}
           </h1>
 
-          <div className="mt-6 flex flex-wrap items-center gap-4 border-b border-neutral-200 pb-8 text-sm text-neutral-500">
+          <div className="text-meta mt-6 flex flex-wrap items-center gap-4 border-b border-neutral-200 pb-8 text-neutral-500">
             {post.author_info?.display_name && (
               <span>{post.author_info.display_name}</span>
             )}
@@ -87,21 +89,38 @@ export async function renderArticlePage(slug: string, lang: WPLanguage) {
 
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-[1fr_300px]">
-            <div
-              className="article-content max-w-2xl text-neutral-800"
-              dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+            <div className="min-w-0 space-y-10">
+              <AdOneColumn id="article-top-leaderboard" size="leaderboard" className="lg:hidden" />
+
+              <div
+                className="article-content max-w-2xl text-neutral-800"
+                dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+              />
+
+              <AdOneColumn id="article-mid-banner" size="billboard" />
+
+              <AdTwoColumn idPrefix="article-mid-pair" />
+            </div>
+
+            <StickyAdRail
+              slots={[
+                { id: "article-sidebar-1", size: "medium-rectangle" },
+                { id: "article-sidebar-2", size: "medium-rectangle" },
+              ]}
             />
-            <aside className="hidden lg:block">
-              <div className="sticky top-28 space-y-6">
-                <AdSlot id="article-sidebar-1" size="medium-rectangle" />
-                <AdSlot id="article-sidebar-2" size="medium-rectangle" />
-              </div>
-            </aside>
           </div>
+
+          <MobileAdStack
+            slots={[
+              { id: "article-mobile-1", size: "medium-rectangle" },
+              { id: "article-mobile-2", size: "medium-rectangle" },
+              { id: "article-mobile-banner", size: "leaderboard" },
+            ]}
+          />
         </div>
 
         <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
-          <AdSlot id="article-footer-banner" size="billboard" />
+          <AdOneColumn id="article-footer-banner" size="billboard" />
         </div>
       </article>
     </SiteLayout>

@@ -35,7 +35,7 @@ export function SearchForm({
         type="search"
         defaultValue={defaultQuery}
         placeholder={lang === "th" ? "ค้นหา…" : "Search…"}
-        className="w-28 border-b border-neutral-300 bg-transparent py-1 text-xs outline-none placeholder:text-neutral-400 focus:border-black sm:w-40"
+        className="w-28 border-b border-neutral-300 bg-transparent py-1 text-[12pt] outline-none placeholder:text-neutral-400 focus:border-black sm:w-40"
       />
       <button
         type="submit"
