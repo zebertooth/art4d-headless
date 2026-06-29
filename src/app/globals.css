@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* art4d.com brand fonts */
+@font-face {
+  font-family: "RM Pro";
+  src: url("/fonts/RMPro-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sarabun";
+  src: url("/fonts/Sarabun-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --font-display: "RM Pro", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Sarabun", "Thonburi", "Leelawadee UI", sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Editorial article body */
+.article-content {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 2rem 0;
+}
+
+.article-content p {
+  margin-bottom: 1.25rem;
+}
+
+.article-content h2,
+.article-content h3 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+.article-content a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.article-content figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: #737373;
+}
+
+.archive-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .archive-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
